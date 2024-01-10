@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { projectController } from "../controllers/project.controllers.js";
-import { upload } from "../middlewares/upload.handler.js";
 import { proyect, singleid } from "../dot/validator.js";
 import { validateid, validationhandler } from '../middlewares/validation.handler.js';
 import passport from 'passport';

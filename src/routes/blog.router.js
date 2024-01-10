@@ -2,7 +2,6 @@ import {Router} from 'express';
 import {blogController} from '../controllers/blog.controllers.js';
 import { validationhandler, validateid } from '../middlewares/validation.handler.js';
 import { blog } from '../dot/validator.js';
-import { upload } from '../middlewares/upload.handler.js';
 import {singleid} from '../dot/validator.js';
 import passport from 'passport';
 
