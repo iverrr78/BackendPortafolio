@@ -19,11 +19,7 @@ import { sequelize } from "../../postgres.js";
     spanish_text: {
       allowNull: false,
       type: DataTypes.TEXT
-  },
-    image:{
-      allowNull: true,
-      type: DataTypes.STRING
-    }
+  }
   },
   {
     timestamps: false,

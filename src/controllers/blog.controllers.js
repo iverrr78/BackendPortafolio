@@ -1,11 +1,5 @@
-import dotenv from 'dotenv';
 import {Blog} from '../models/asociations.js';
 import { Category } from '../models/asociations.js';
-
-dotenv.config()
-
-const HOST = process.env.HOST;
-const PORT = process.env.PORT;
 
 
 //------------- Traditional controllers ------------------
@@ -53,8 +47,7 @@ async function postBlogs (req, res){
         englis_name: blog.name_english, 
         english_text: blog.text_english,
         spanish_name: blog.name_spanish,
-        spanish_text: blog.text_spanish,
-        image: `http://${HOST}:${PORT}/uploads/images/${req.file.filename}` || `http://${HOST}:${PORT}/public/uploads/images/default-pic.jpg`});
+        spanish_text: blog.text_spanish,});
         
         if (blog.id_category && blog.id_category.length > 0) {
             const selectedCategories = await Category.findAll({
@@ -77,16 +70,6 @@ async function patchBlogs (req, res){
     const update = req.body;
     const id = req.query.id;
 
-    if(update.previous_image != `http://${HOST}:${PORT}/public/uploads/images/default-pic.jpg`){
-        fs.unlink(update.previous_image, (err)=>{
-        if (err) {
-            console.error('Error deleting image:', err);
-        } else {
-            console.log('Image deleted successfully.');
-        }
-    })
-    }
-
     try{
         newblog = await Blog.update({
             english_name: update.name_english,
@@ -94,7 +77,6 @@ async function patchBlogs (req, res){
             spanish_name: update.name_spansih,
             spanish_text: update.text_spanish,
             id_category: update.id_category,
-            image: `http://${HOST}:${PORT}/public/uploads/images/${req.file.filename}` || `http://${HOST}:${PORT}/public/uploads/images/default-pic.jpg`
         },{where:{
             id: id
             }});

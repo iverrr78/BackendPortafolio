@@ -25,10 +25,6 @@ const Projects = sequelize.define(
         link:{
             type: DataTypes.STRING,
             allowNull: true
-        },
-        image:{
-            type: DataTypes.STRING,
-            allowNull: true
         }
     },
     {

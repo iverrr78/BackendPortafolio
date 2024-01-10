@@ -4,15 +4,16 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME, // db name,
-  process.env.DB_USER, // username
-  process.env.DB_PASSWORD, // password
+  process.env.DATABASE_URL,
   {
     host: process.env.DB_HOST,
     dialect: "postgres",
-    define:{
-      freezeTableName: true
-    },
+    dialectOptions:{
+      ssl:{
+        require:true,
+        rejectUnauthorized:false,
+      }
+    }
   }
 );
 
