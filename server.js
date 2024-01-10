@@ -32,7 +32,7 @@ const main = async () =>{
 
     Routes(app);
 
-    app.listen(3001);
+    app.listen(process.env.PORT);
     console.log('La aplicacion esta escuchando en el puerto 3001');
 }
 
