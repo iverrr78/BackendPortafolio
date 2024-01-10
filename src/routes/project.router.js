@@ -23,11 +23,11 @@ routerProjects.get(routes.projectGetById, (req, res)=>{
     projectController.getById(req, res);
 })
 
-routerProjects.post(routes.projectPost, passport.authenticate('jwt',{session:false}), upload.single('image'), validationhandler(proyect), (req, res)=>{
+routerProjects.post(routes.projectPost, passport.authenticate('jwt',{session:false}), validationhandler(proyect), (req, res)=>{
     projectController.post(req, res);
 })
 
-routerProjects.patch(routes.projectPatch, passport.authenticate('jwt',{session:false}), upload.single('image'), validateid(singleid), validationhandler(proyect), (req, res)=>{
+routerProjects.patch(routes.projectPatch, passport.authenticate('jwt',{session:false}), validateid(singleid), validationhandler(proyect), (req, res)=>{
     projectController.patch(req, res);
 })
 

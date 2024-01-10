@@ -26,11 +26,11 @@ routerBlogs.get(routes.blogGetById, (req, res)=>{
     blogController.getById(req,res);
 })
 
-routerBlogs.post(routes.blogPost, passport.authenticate('jwt',{session:false}), validationhandler(blog), upload.single('image'), (req, res)=>{
+routerBlogs.post(routes.blogPost, passport.authenticate('jwt',{session:false}), validationhandler(blog), (req, res)=>{
     blogController.post(req, res);
 });
 
-routerBlogs.patch(routes.blogUpdate, passport.authenticate('jwt',{session:false}), validateid(singleid), validationhandler(blog), upload.single('image'), (req, res)=>{
+routerBlogs.patch(routes.blogUpdate, passport.authenticate('jwt',{session:false}), validateid(singleid), validationhandler(blog), (req, res)=>{
     blogController.patch(req, res);
 })
 
