@@ -62,8 +62,7 @@ async function getProjectById (req, res){
 
 // post project
 async function postProjects (req, res){
-    //const projects = req.body;
-    const project = JSON.parse(req.body);
+    const project = req.body
     try{
         const newProjects = await Projects.create({
                 english_name: project.name_english,
