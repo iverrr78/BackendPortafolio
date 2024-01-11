@@ -71,7 +71,6 @@ async function postProjects (req, res){
                 english_description: project.description_english,
                 spanish_description: project.description_spanish, 
                 link: project.link, github: project.github,
-                image: `http://${HOST}:${PORT}/uploads/images/${req.file.filename}` || `http://${HOST}:${PORT}/uploads/images/default-pic.jpg`
             });
             
             if (project.id_category && project.id_category.length > 0) {
@@ -106,26 +105,6 @@ async function patchProjects (req, res){
     const id = req.query.id;
 
     const project = JSON.parse(req.body.body);
-
-    const __filename = fileURLToPath(import.meta.url);
-
-    const __dirname = path.dirname(__filename);
-
-    const imageFolderPath = path.join(__dirname, '../public/uploads/images');
-
-    const imageNameToDelete = project.previous_image.split('images/');
-
-    const imagePathToDelete = path.join(imageFolderPath, imageNameToDelete[1]);
-    
-    if(project.previous_image != `http://${HOST}:${PORT}/uploads/images/default-pic.jpg`){
-        fs.unlink(imagePathToDelete, (err)=>{
-        if (err) {
-            console.error('Error deleting image:', err);
-        } else {
-            console.log('Image deleted successfully.');
-        }
-    })
-    }
     
     try{
         await Projects.update({
@@ -136,7 +115,6 @@ async function patchProjects (req, res){
             id_category: project.id_category,
             github: project.github,
             link: project.link,
-            image: `http://${HOST}:${PORT}/uploads/images/${req.file.filename}` || `http://${HOST}:${PORT}/uploads/images/default-pic.jpg`
             },{where:{
                 id: id
             }});
