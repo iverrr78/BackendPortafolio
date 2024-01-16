@@ -11,12 +11,22 @@ const id_stack = joi.array().items(id);
 
 const blog = joi.object({
 
-    name: name.alter({
+    name_english: name.alter({
         post: (blog) => blog.required(),
         update: (blog) => blog.optional()
     }),
 
-    text: text.alter({
+    name_spanish: name.alter({
+        post: (blog) => blog.required(),
+        update: (blog) => blog.optional()
+    }),
+
+    text_english: text.alter({
+        post: (blog) => blog.required(),
+        update: (blog) => blog.optional()
+    }),
+
+    text_spanish: text.alter({
         post: (blog) => blog.required(),
         update: (blog) => blog.optional()
     }),
