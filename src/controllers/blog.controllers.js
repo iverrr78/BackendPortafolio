@@ -41,7 +41,9 @@ async function getBlogById (req, res){
 
 // add a blog
 async function postBlogs (req, res){
-    const blog = JSON.parse(req.body);
+    //console.log("body", req)
+    //const blog = JSON.parse(req.body);
+    const blog = req.body
     try{
     const newBlog = await Blog.create({
         englis_name: blog.name_english, 
