@@ -1,7 +1,7 @@
 
 function validateid(schema){
     return(req, res, next)=>{
-        console.log("id", req.query);
+        console.log("id", req.query.id);
     const {error} = schema.validate(parseInt(req.query.id));
 
     if(error){
