@@ -74,7 +74,7 @@ async function patchBlogs (req, res){
         newblog = await Blog.update({
             english_name: update.name_english,
             english_text: update.text_english,
-            spanish_name: update.name_spansih,
+            spanish_name: update.name_spanish,
             spanish_text: update.text_spanish,
             id_category: update.id_category,
         },{where:{
