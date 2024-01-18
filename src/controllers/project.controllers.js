@@ -103,6 +103,9 @@ async function postProjects (req, res){
 async function patchProjects (req, res){
     const id = req.query.id;
 
+    console.log("id", req.query.id);
+    console.log("body", req.body)
+
     const project = JSON.parse(req.body.body);
     
     try{
