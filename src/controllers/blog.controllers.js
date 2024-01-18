@@ -71,7 +71,7 @@ async function patchBlogs (req, res){
     const id = req.query.id;
 
     try{
-        newblog = await Blog.update({
+        await Blog.update({
             english_name: update.name_english,
             english_text: update.text_english,
             spanish_name: update.name_spanish,
