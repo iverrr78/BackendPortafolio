@@ -106,7 +106,7 @@ async function patchProjects (req, res){
     console.log("id", req.query.id);
     console.log("body", req.body)
 
-    const project = JSON.parse(req.body.body);
+    const project = req.body
     
     try{
         await Projects.update({
