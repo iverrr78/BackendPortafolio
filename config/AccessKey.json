@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "quantum-lambda-412622",
+  "private_key_id": "5972482390fd048844b7c9426293bfb267bb59f9",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDFYYXyHcActgPN\nvRBNAkBL/cX2IhAxNNZ1iLWPUsKq4Afa7bJRN6dxDhjh62uRfxc+iQiy39lsYkGf\nOmkfToMfYckeNFbLEMSOvRoAkCOViiiYaoD+MJHyxHERkJBnzZvdsKwsbhqt9vJW\nbGnbkSAAV8x44tJlLYC5NlVA54Ft6Ms+6JJjKRTwzRTjai5/ntOx7LXfwX1aZ8xl\nDADKZ89/Kzt8hBNbA6ZbCa1xsr0fhprqWQEBqTHFxndSJiMMb/XsI1r62gQAqXdV\nyAs9fJCI0RES0w6FmA09sZJsgXuG3APYUWBP4JwFxksMTbBtzJil3pkwM0/fHxyr\nsZvYeG29AgMBAAECggEAD27V5o2xcv0/VGObRe4uYVK1Gw7kRbisKRH4oj12F56/\nNny949BOcQ5JX0bFSSHPCzZzPes3SJxxJZZPWGGO6pH+g/RTMfr8Z229PfyHL77W\n+D3hmp5pFvqJnbY4OEmRDZcuCyZLwzzrC1tcNo0FG8nBpNUVXtBdP34SUeoYCmQV\ncYRxWNpVLa0X/KwsqZP6wyANxCZKuPS3oS6LMIdSR0qnmDHGSFwe16E8fo0rqaXi\ngpkfdYu0lQ1DwW1oVbSmowGl/uscCoSAiL4jD3yvNGWQES23xERy5TDzFzgEn5iS\nQXBEjMrrThC4vCFhDNK5n4OGBxni3rqfNyGFsrFqsQKBgQDlOCV2IORvFKU0zIyS\n3k3OmTHMnpdFu+URPtfVJILQoJYYr9lJtLJtA6X2zAdmrgPtGsvjDaUGRQLNW+N3\nIntYhQNjrwIcQ+qfE+TLp7p/ZnG6oHu1mvrQ6cW3wdUV6wDjeg55PlaiLLM/aONd\nLe9P1cu7gs5NzC5njn+gws7C7QKBgQDccRrE928Mcwq6mDmm+6wAm4sRnGLjnTCV\nHGDXAI5jvhmxsDwbEBjJJaB7WDAXfgKdZnTyWx9afRZnpRg7LUNLgB1nz+DmWDba\n5JgVRsLrTJLyV7lbMLhhRxPE+e1dBdIdyEjfi/bBe6aO2W1jfQZdkjSJMPPA6Om9\ntO6x+NfsEQKBgQDfXi9jRfpVJNE4+nuiQ2+e/DpDI+hV1BwNCihZVBMGKvcZZ4Nf\nB+83vG5mabxsmvbIf2xf/lPqICXy6LBoz/lS8Yu0AD8WPDjOfBxhOTnMHJCHRQxI\nlJYGL0i1IPX9PdzHz5F7JPxXXSfvis7FZpXmPnkiaP2RYn91+q70geHqoQKBgQCs\nUz65+zO0Z7pbY+StxNARKYbtnXMwvBDef/C0IpstHc64OSzDezHlDKUHx0jRFJC2\nuwFw9ArukhqRq13l5NxWiTBzlu4ZI5y+QTUibM6zYoj9KdacktmQMiAiO75ymbpH\nzeop1yBu4Fq0EQSSYYo4W7L2DG6Av5L52hc+yWkCAQKBgQCWHRVfkYkGWiIcChFh\nCryfg6+BwOxxgJ4EpnhBiWYjcx63SV+OdQe54TDnknIM6DGLC3PCiNnH3DucN4z9\nlQkdIJIBFGBNlYFBXHUGxa8rj8BgDpDAmJktYuQVzSv+zqSP5YUQkRgKJd5WG7+i\nnNaRXipc5Qh0nOyTNnTxuJUfcw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "portafolio12@quantum-lambda-412622.iam.gserviceaccount.com",
+  "client_id": "100146135448388992371",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/portafolio12%40quantum-lambda-412622.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
