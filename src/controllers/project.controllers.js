@@ -2,14 +2,13 @@ import dotenv from 'dotenv';
 import { Projects } from "../models/project.model.js";
 import { Category } from "../models/category.model.js";
 import { Stack } from "../models/stack.model.js";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from 'url';
+import { Storage } from '@google-cloud/storage';
 
 dotenv.config()
 
-const HOST = process.env.HOST;
-const PORT = process.env.PORT;
+const GOOGLEKEY = process.env.GOOGLE_APPLICATION_CREDENTIALS_CONTENT;
+const PROJECT_ID = process.env.PROJECT_ID;
+const DEFAULT_IMAGE = process.env.DEFAULT_IMAGE;
 
 
 //------------- Traditional controllers ------------------
@@ -40,7 +39,8 @@ async function getAllProjects (req, res){
             github: project.github,
             categoryIds: project.Categories.map((category) => category.id),
             satckIds: project.Stacks.map((stack)=> stack.id),
-            image: project.image
+            imageurl: project.imageurl,
+            imagename: project.imagename
         }));
         res.json(projectsWithCategoryIdsStackIds);
     }
@@ -63,6 +63,34 @@ async function getProjectById (req, res){
 // post project
 async function postProjects (req, res){
     const project = req.body
+    const image = req.file
+
+    const storageClient = new Storage({
+        projectId: PROJECT_ID,
+        keyFilename: GOOGLEKEY,
+      });
+
+    const bucketName = 'portafolio12';
+    var url;
+    var gcsFileName;
+
+    if (image) {
+        const bucket = storageClient.bucket(bucketName);
+        gcsFileName = Date.now() + '_' + image.originalname;
+        const blob = bucket.file(gcsFileName);
+        const blobStream = blob.createWriteStream();
+
+        blobStream.on('finish', async () => {
+            const [url1] = await blob.getSignedUrl({
+              action: 'read',
+              expires: '01-01-3000',
+            });
+            url = url1
+        });
+    } else {
+        url = DEFAULT_IMAGE;
+        gcsFileName = 'defaultimage.jpg';
+    }
     try{
         const newProjects = await Projects.create({
                 english_name: project.name_english,
@@ -70,6 +98,8 @@ async function postProjects (req, res){
                 english_description: project.description_english,
                 spanish_description: project.description_spanish, 
                 link: project.link, github: project.github,
+                imageurl: url,
+                imagename: gcsFileName
             });
             
             if (project.id_category && project.id_category.length > 0) {
@@ -102,11 +132,44 @@ async function postProjects (req, res){
 //update project
 async function patchProjects (req, res){
     const id = req.query.id;
-
-    console.log("id", req.query.id);
-    console.log("body", req.body)
-
     const project = req.body
+    const image = req.file
+    const storageClient = new Storage({
+        projectId: PROJECT_ID,
+        keyFilename: GOOGLEKEY,
+      });
+
+    var url
+    var gcsFileName;
+
+    if (image) {
+        const bucket = storageClient.bucket(bucketName);
+        gcsFileName = Date.now() + '_' + image.originalname;
+        const blob = bucket.file(gcsFileName);
+        const blobStream = blob.createWriteStream();
+
+        blobStream.on('finish', async () => {
+            const [url1] = await blob.getSignedUrl({
+              action: 'read',
+              expires: '01-01-3000',
+            });
+            url = url1
+        });
+
+        if (project.imagename != "defaultimage.jpg"){
+            const previousimage = bucket.file(project.imagename);
+            previousimage.delete()
+                .then(() => {
+                    console.log(`La imagen ${project.imagename} se ha eliminado correctamente.`);
+                })
+                .catch((err) => {
+                    console.error(`Error al eliminar la imagen ${project.imagename}:`, err);
+                });     
+        }
+    } else {
+        url = project.imageurl;
+        gcsFileName = project.imagename;
+    }
     
     try{
         await Projects.update({
@@ -117,6 +180,8 @@ async function patchProjects (req, res){
             id_category: project.id_category,
             github: project.github,
             link: project.link,
+            imageurl: url,
+            imagename: gcsFileName
             },{where:{
                 id: id
             }});
@@ -130,6 +195,12 @@ async function patchProjects (req, res){
 
 //delete blogs
 async function deleteProjects (req, res){
+    const storageClient = new Storage({
+        projectId: PROJECT_ID,
+        keyFilename: GOOGLEKEY,
+      });
+    const bucketname = 'portafolio12';
+
     let ids = req.query.id;
     if(!Array.isArray(ids)){
         let newids = [];
@@ -141,6 +212,17 @@ async function deleteProjects (req, res){
         ids.forEach(element => {
             Projects.destroy({ where: {id: element}});
         });
+
+        const previousimagename = req.body.previousimage;
+        const previousimage = storageClient.bucket(bucketname).file(previousimagename);
+        
+        previousimage.delete()
+            .then(() => {
+                console.log(`La imagen ${previousimagename} se ha eliminado correctamente.`);
+            })
+            .catch((err) => {
+                console.error(`Error al eliminar la imagen ${previousimagename}:`, err);
+            });
 
         res.json("Projects succesfully deleted");
     }

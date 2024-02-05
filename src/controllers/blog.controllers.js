@@ -1,6 +1,13 @@
+import dotenv from 'dotenv';
 import {Blog} from '../models/asociations.js';
 import { Category } from '../models/asociations.js';
+import { Storage } from '@google-cloud/storage';
 
+dotenv.config()
+
+const GOOGLEKEY = process.env.GOOGLE_APPLICATION_CREDENTIALS_CONTENT;
+const PROJECT_ID = process.env.PROJECT_ID;
+const DEFAULT_IMAGE = process.env.DEFAULT_IMAGE;
 
 //------------- Traditional controllers ------------------
 
@@ -18,7 +25,8 @@ async function getAllBlogs (req, res){
             english_text: blog.english_text,
             spanish_name: blog.spanish_name,
             spanish_text: blog.spanish_text,
-            image: blog.image,
+            imageurl: blog.imageurl,
+            imagename: blog.imagename,
             categoryIds: blog.Categories.map((category) => category.id),
         }));
         res.json(blogsWithCategoryIds);
@@ -42,12 +50,41 @@ async function getBlogById (req, res){
 // add a blog
 async function postBlogs (req, res){
     const blog = req.body
+
+    const storageClient = new Storage({
+        projectId: PROJECT_ID,
+        keyFilename: GOOGLEKEY,
+      });
+    const bucketName = 'portafolio12';
+    var url;
+    var gcsFileName;
+
+    if (image) {
+        const bucket = storageClient.bucket(bucketName);
+        gcsFileName = Date.now() + '_' + image.originalname;
+        const blob = bucket.file(gcsFileName);
+        const blobStream = blob.createWriteStream();
+
+        blobStream.on('finish', async () => {
+            const [url1] = await blob.getSignedUrl({
+              action: 'read',
+              expires: '01-01-3000',
+            });
+            url = url1
+        });
+    } else {
+        url = DEFAULT_IMAGE;
+        gcsFileName = 'defaultimage.jpg';
+    }
     try{
     const newBlog = await Blog.create({
         englis_name: blog.name_english, 
         english_text: blog.text_english,
         spanish_name: blog.name_spanish,
-        spanish_text: blog.text_spanish,});
+        spanish_text: blog.text_spanish,
+        imageurl: url,
+        imagename: gcsFileName
+    });
         
         if (blog.id_category && blog.id_category.length > 0) {
             const selectedCategories = await Category.findAll({
@@ -69,6 +106,43 @@ async function postBlogs (req, res){
 async function patchBlogs (req, res){
     const update = req.body;
     const id = req.query.id;
+    const image = req.file
+    const storageClient = new Storage({
+        projectId: PROJECT_ID,
+        keyFilename: GOOGLEKEY,
+      });
+
+    var url
+    var gcsFileName;
+
+    if (image) {
+        const bucket = storageClient.bucket(bucketName);
+        gcsFileName = Date.now() + '_' + image.originalname;
+        const blob = bucket.file(gcsFileName);
+        const blobStream = blob.createWriteStream();
+
+        blobStream.on('finish', async () => {
+            const [url1] = await blob.getSignedUrl({
+              action: 'read',
+              expires: '01-01-3000',
+            });
+            url = url1
+        });
+
+        if (project.imagename != "defaultimage.jpg"){
+            const previousimage = bucket.file(project.imagename);
+            previousimage.delete()
+                .then(() => {
+                    console.log(`La imagen ${project.imagename} se ha eliminado correctamente.`);
+                })
+                .catch((err) => {
+                    console.error(`Error al eliminar la imagen ${project.imagename}:`, err);
+                });     
+        }
+    } else {
+        url = project.imageurl;
+        gcsFileName = project.imagename;
+    }
 
     try{
         await Blog.update({
@@ -77,6 +151,8 @@ async function patchBlogs (req, res){
             spanish_name: update.name_spanish,
             spanish_text: update.text_spanish,
             id_category: update.id_category,
+            imageurl: url,
+            imagename: gcsFileName
         },{where:{
             id: id
             }});
@@ -91,6 +167,12 @@ async function patchBlogs (req, res){
 
 //delete blogs by id
 async function deleteBlogs (req, res){
+    const storageClient = new Storage({
+        projectId: PROJECT_ID,
+        keyFilename: GOOGLEKEY,
+      });
+    const bucketname = 'portafolio12';
+
     let ids = req.query.id;
     if(!Array.isArray(ids)){
         let newids = [];
@@ -103,6 +185,17 @@ async function deleteBlogs (req, res){
             Blog.destroy({ where: {id: element}});
         });
 
+        const previousimagename = req.body.previousimage;
+        const previousimage = storageClient.bucket(bucketname).file(previousimagename);
+        
+        previousimage.delete()
+            .then(() => {
+                console.log(`La imagen ${previousimagename} se ha eliminado correctamente.`);
+            })
+            .catch((err) => {
+                console.error(`Error al eliminar la imagen ${previousimagename}:`, err);
+            });
+            
         res.json("Blogs succesfully deleted");
     }
     catch(err){

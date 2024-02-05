@@ -18,6 +18,12 @@ const Projects = sequelize.define(
         spanish_description:{
             type: DataTypes.STRING,
         },
+        imageurl:{
+            type: DataTypes.STRING
+        },
+        imagername: {
+            type: DataTypes.STRING,
+        },
         github:{
             type: DataTypes.STRING,
             allowNull: true
