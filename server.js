@@ -12,7 +12,7 @@ const main = async () =>{
 
     dotenv.config();
 
-    await sequelize.sync({force: false});
+    await sequelize.sync({force: true});
 
     let app = express();
 
