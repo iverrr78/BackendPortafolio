@@ -49,7 +49,10 @@ async function getBlogById (req, res){
 
 // add a blog
 async function postBlogs (req, res){
-    const blog = req.body
+    //console.log("body", req.file);
+    //res.json("hola");
+    const blog = JSON.parse(req.body.body);
+    const image = req.file
 
     const storageClient = new Storage({
         projectId: PROJECT_ID,
@@ -71,34 +74,69 @@ async function postBlogs (req, res){
               expires: '01-01-3000',
             });
             url = url1
+
+            try{
+                const newBlog = await Blog.create({
+                    englis_name: blog.name_english, 
+                    english_text: blog.text_english,
+                    spanish_name: blog.name_spanish,
+                    spanish_text: blog.text_spanish,
+                    imageurl: url,
+                    imagename: gcsFileName
+                });
+                    
+                    if (blog.id_category && blog.id_category.length > 0) {
+                        const selectedCategories = await Category.findAll({
+                        where: {
+                                id: blog.id_category,
+                            }
+                        })
+                        await newBlog.setCategories(selectedCategories);
+                    }
+            
+                    res.json("Blog succesfully added");
+                }
+                catch(err){
+                    console.log("error:", err.message);
+                    return res.status(500).json({message: err.message });
+                }
         });
+
+        blobStream.on('error', (err) => {
+            console.error('Error al escribir en GCS:', err);
+            // Manejar el error
+        });
+
+        blobStream.end(req.file.buffer);
     } else {
         url = DEFAULT_IMAGE;
         gcsFileName = 'defaultimage.jpg';
-    }
-    try{
-    const newBlog = await Blog.create({
-        englis_name: blog.name_english, 
-        english_text: blog.text_english,
-        spanish_name: blog.name_spanish,
-        spanish_text: blog.text_spanish,
-        imageurl: url,
-        imagename: gcsFileName
-    });
-        
-        if (blog.id_category && blog.id_category.length > 0) {
-            const selectedCategories = await Category.findAll({
-            where: {
-                    id: blog.id_category,
-                }
-            })
-            await newBlog.setCategories(selectedCategories);
-        }
 
-        res.json("Blog succesfully added");
-    }
-    catch(err){
-        return res.status(500).json({message: err.message });
+        try{
+            const newBlog = await Blog.create({
+                    englis_name: blog.name_english, 
+                    english_text: blog.text_english,
+                    spanish_name: blog.name_spanish,
+                    spanish_text: blog.text_spanish,
+                    imageurl: url,
+                    imagename: gcsFileName
+                });
+                
+                if (blog.id_category && blog.id_category.length > 0) {
+                    const selectedCategories = await Category.findAll({
+                    where: {
+                        id: blog.id_category,
+                    }
+                })
+    
+                    await newBlog.setCategories(selectedCategories);
+                }
+    
+            res.json("Projects succesfully added");
+        }
+        catch(err){
+            return res.status(500).json({message: err.message });
+        }
     }
 }
 
@@ -185,7 +223,8 @@ async function deleteBlogs (req, res){
             Blog.destroy({ where: {id: element}});
         });
 
-        const previousimagename = req.body.previousimage;
+        console.log("previousimagename:", req.query);
+        const previousimagename = req.query.previousimagename;
         const previousimage = storageClient.bucket(bucketname).file(previousimagename);
         
         previousimage.delete()

@@ -68,15 +68,7 @@ async function patchStacks (req, res){
 
 //delete stacks
 async function deleteStacks (req, res){
-    console.log("id",req.query.id);
     let ids = req.query.id;
-    /*if(!Array.isArray(ids)){
-        let newids = [];
-        newids.push(ids);
-        ids = newids; 
-    }*/
-
-    console.log(ids);
 
     try{
         

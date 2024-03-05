@@ -19,9 +19,9 @@ const Projects = sequelize.define(
             type: DataTypes.STRING,
         },
         imageurl:{
-            type: DataTypes.STRING
+            type: DataTypes.TEXT,
         },
-        imagername: {
+        imagename: {
             type: DataTypes.STRING,
         },
         github:{

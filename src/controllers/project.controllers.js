@@ -62,7 +62,7 @@ async function getProjectById (req, res){
 
 // post project
 async function postProjects (req, res){
-    const project = req.body
+    const project = JSON.parse(req.body.body);
     const image = req.file
 
     const storageClient = new Storage({
@@ -85,47 +85,92 @@ async function postProjects (req, res){
               action: 'read',
               expires: '01-01-3000',
             });
-            url = url1
+
+            url = url1;
+            try{
+                const newProjects = await Projects.create({
+                        english_name: project.name_english,
+                        spanish_name: project.name_spanish, 
+                        english_description: project.description_english,
+                        spanish_description: project.description_spanish, 
+                        link: project.link, github: project.github,
+                        imageurl: url,
+                        imagename: gcsFileName
+                    });
+                    
+                    if (project.id_category && project.id_category.length > 0) {
+                        const selectedCategories = await Category.findAll({
+                        where: {
+                            id: project.id_category,
+                        }
+                    })
+        
+                        await newProjects.setCategories(selectedCategories);
+                    }
+        
+                    if(project.id_stack && project.id_stack.length > 0){
+                        const selectedStacks = await Stack.findAll({
+                           where:{
+                            id: project.id_stack,
+                           } 
+                        })
+        
+                        await newProjects.setStacks(selectedStacks);
+                    }
+        
+                res.json("Projects succesfully added");
+            }
+            catch(err){
+                return res.status(500).json({message: err.message });
+            }
         });
+
+        blobStream.on('error', (err) => {
+            console.error('Error al escribir en GCS:', err);
+            // Manejar el error
+        });
+
+        blobStream.end(req.file.buffer);
     } else {
         url = DEFAULT_IMAGE;
         gcsFileName = 'defaultimage.jpg';
-    }
-    try{
-        const newProjects = await Projects.create({
-                english_name: project.name_english,
-                spanish_name: project.name_spanish, 
-                english_description: project.description_english,
-                spanish_description: project.description_spanish, 
-                link: project.link, github: project.github,
-                imageurl: url,
-                imagename: gcsFileName
-            });
-            
-            if (project.id_category && project.id_category.length > 0) {
-                const selectedCategories = await Category.findAll({
-                where: {
-                    id: project.id_category,
-                }
-            })
 
-                await newProjects.setCategories(selectedCategories);
-            }
-
-            if(project.id_stack && project.id_stack.length > 0){
-                const selectedStacks = await Stack.findAll({
-                   where:{
-                    id: project.id_stack,
-                   } 
+        try{
+            const newProjects = await Projects.create({
+                    english_name: project.name_english,
+                    spanish_name: project.name_spanish, 
+                    english_description: project.description_english,
+                    spanish_description: project.description_spanish, 
+                    link: project.link, github: project.github,
+                    imageurl: url,
+                    imagename: gcsFileName
+                });
+                
+                if (project.id_category && project.id_category.length > 0) {
+                    const selectedCategories = await Category.findAll({
+                    where: {
+                        id: project.id_category,
+                    }
                 })
-
-                await newProjects.setStacks(selectedStacks);
-            }
-
-        res.json("Projects succesfully added");
-    }
-    catch(err){
-        return res.status(500).json({message: err.message });
+    
+                    await newProjects.setCategories(selectedCategories);
+                }
+    
+                if(project.id_stack && project.id_stack.length > 0){
+                    const selectedStacks = await Stack.findAll({
+                       where:{
+                        id: project.id_stack,
+                       } 
+                    })
+    
+                    await newProjects.setStacks(selectedStacks);
+                }
+    
+            res.json("Projects succesfully added");
+        }
+        catch(err){
+            return res.status(500).json({message: err.message });
+        }
     }
 }
 
@@ -201,6 +246,7 @@ async function deleteProjects (req, res){
       });
     const bucketname = 'portafolio12';
 
+
     let ids = req.query.id;
     if(!Array.isArray(ids)){
         let newids = [];
@@ -208,12 +254,14 @@ async function deleteProjects (req, res){
         ids = newids; 
     }
 
+    console.log("id:", ids);
+
     try{
         ids.forEach(element => {
             Projects.destroy({ where: {id: element}});
         });
 
-        const previousimagename = req.body.previousimage;
+        const previousimagename = req.query.previousimagename;
         const previousimage = storageClient.bucket(bucketname).file(previousimagename);
         
         previousimage.delete()

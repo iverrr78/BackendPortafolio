@@ -13,7 +13,6 @@ const LocalStrategy = new Strategy(async (username, password, done)=>{
             done(error, null);
         }
     }catch(err){
-        console.log("holaerror");
         done(err, null);
     }
 });

@@ -6,7 +6,6 @@ const routerAuth= express.Router();
 
 routerAuth.post('/', passport.authenticate('local', {session:false}) ,
 (req, res, next)=>{
-    console.log("que tal?");
     try{
         const secret = process.env.JWT_SECRET ;
         const user = req.user;

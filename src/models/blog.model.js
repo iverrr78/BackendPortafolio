@@ -21,10 +21,10 @@ import { sequelize } from "../../postgres.js";
       type: DataTypes.TEXT
     },
     imageurl: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     imagename: {
-      type: DataTypes.STRING
+      type: DataTypes.TEXT,
     }
   },
   {

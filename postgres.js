@@ -6,7 +6,6 @@ dotenv.config();
 const sequelize = new Sequelize(
   process.env.DATABASE_URL,
   {
-    host: process.env.DB_HOST,
     dialect: "postgres",
     dialectOptions:{
       ssl:{
@@ -18,18 +17,3 @@ const sequelize = new Sequelize(
 );
 
 export {sequelize};
-
-/*const sequelize = new Sequelize(
-  "portafolio-blog", // db name,
-  "postgres", // username
-  "root", // password
-  {
-    host: "localhost",
-    dialect: "postgres",
-    define:{
-      freezeTableName: true
-    },
-  }
-);
-
-export {sequelize};*/

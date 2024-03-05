@@ -4,6 +4,7 @@ import { validationhandler, validateid } from '../middlewares/validation.handler
 import { blog } from '../dot/validator.js';
 import {singleid} from '../dot/validator.js';
 import passport from 'passport';
+import {upload} from '../middlewares/upload.handler.js';
 
 const routes = {
     blogGetAll: '/getAll',
@@ -25,7 +26,7 @@ routerBlogs.get(routes.blogGetById, (req, res)=>{
     blogController.getById(req,res);
 })
 
-routerBlogs.post(routes.blogPost, passport.authenticate('jwt',{session:false}), validationhandler(blog), (req, res)=>{
+routerBlogs.post(routes.blogPost, passport.authenticate('jwt',{session:false}), upload.single('image'), validationhandler(blog), (req, res)=>{
     blogController.post(req, res);
 });
 
