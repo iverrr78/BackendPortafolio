@@ -20,12 +20,7 @@ const main = async () =>{
 
     app.use(bodyParser.urlencoded({ extended: false }));
 
-    app.use(cors({
-        origin: 'https://portafolio-snowy-nine.vercel.app', // Permite solo este dominio
-        methods: 'GET,POST,PATCH,DELETE',
-        allowedHeaders: 'Content-Type,Authorization'
-    }
-    ));
+    app.use(cors({}));
 
     app.use(passport.initialize())
 
