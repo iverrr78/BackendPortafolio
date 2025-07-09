@@ -6,7 +6,7 @@ import { Storage } from '@google-cloud/storage';
 
 dotenv.config()
 
-const GOOGLEKEY = process.env.GOOGLE_APPLICATION_CREDENTIALS_CONTENT;
+const GOOGLEKEY = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_CONTENT);
 const PROJECT_ID = process.env.PROJECT_ID;
 const DEFAULT_IMAGE = process.env.DEFAULT_IMAGE;
 
@@ -67,8 +67,8 @@ async function postProjects (req, res){
 
     const storageClient = new Storage({
         projectId: PROJECT_ID,
-        keyFilename: GOOGLEKEY,
-      });
+        credentials: GOOGLEKEY,  // Changed from keyFilename to credentials
+    });
 
     const bucketName = 'portafolio12';
     var url;
