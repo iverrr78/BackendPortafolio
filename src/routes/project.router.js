@@ -27,7 +27,7 @@ routerProjects.post(routes.projectPost, passport.authenticate('jwt',{session:fal
     projectController.post(req, res);
 })
 
-routerProjects.patch(routes.projectPatch, passport.authenticate('jwt',{session:false}), upload.single('image'), validateid(singleid), validationhandler(proyect), (req, res)=>{
+routerProjects.patch(routes.projectPatch, passport.authenticate('jwt',{session:false}), upload.single('image'), validateid(singleid), (req, res)=>{
     projectController.patch(req, res);
 })
 

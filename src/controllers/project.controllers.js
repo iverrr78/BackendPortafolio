@@ -177,18 +177,21 @@ async function postProjects (req, res){
 //update project
 async function patchProjects (req, res){
     const id = req.query.id;
-    const project = req.body
+    const project = JSON.parse(req.body.body);
     const image = req.file
+    const bucketname = 'portafolio12';
     const storageClient = new Storage({
         projectId: PROJECT_ID,
-        keyFilename: GOOGLEKEY,
+        credentials: GOOGLEKEY,
       });
 
     var url
     var gcsFileName;
+    console.log("project", project);
 
     if (image) {
-        const bucket = storageClient.bucket(bucketName);
+        console.log("hola 2");
+        const bucket = storageClient.bucket(bucketname);
         gcsFileName = Date.now() + '_' + image.originalname;
         const blob = bucket.file(gcsFileName);
         const blobStream = blob.createWriteStream();
@@ -198,43 +201,66 @@ async function patchProjects (req, res){
               action: 'read',
               expires: '01-01-3000',
             });
-            url = url1
+            url = url1;
+
+            if (project.imagename !== "defaultimage.jpg") {
+                try {
+                    const previousimage = bucket.file(project.imagename);
+                    await previousimage.delete();
+                    console.log(`La imagen ${project.imagename} se ha eliminado correctamente.`);
+                } catch (err) {
+                    console.error(`Error al eliminar la imagen ${project.imagename}:`, err);
+                }
+            }
+
+            try {
+                await Projects.update({
+                    english_name: project.name_english,
+                    spanish_name: project.name_spanish,
+                    english_description: project.description_english,
+                    spanish_description: project.description_spanish,
+                    id_category: project.id_category,
+                    github: project.github,
+                    link: project.link,
+                    imageurl: url,
+                    imagename: gcsFileName
+                }, {
+                    where: { id: id }
+                });
+                res.json("projects updated correctly");
+            } catch(err) {
+                return res.status(500).json({message: err.message });
+            }
         });
 
-        if (project.imagename != "defaultimage.jpg"){
-            const previousimage = bucket.file(project.imagename);
-            previousimage.delete()
-                .then(() => {
-                    console.log(`La imagen ${project.imagename} se ha eliminado correctamente.`);
-                })
-                .catch((err) => {
-                    console.error(`Error al eliminar la imagen ${project.imagename}:`, err);
-                });     
-        }
+        blobStream.on('error', (err) => {
+            console.error('Error al escribir en GCS:', err);
+            // Manejar el error
+        });
+
+        blobStream.end(req.file.buffer);
     } else {
         url = project.imageurl;
         gcsFileName = project.imagename;
-    }
-    
-    try{
-        await Projects.update({
-            english_name: project.name_english,
-            spanish_name: project.name_spanish,
-            english_description: project.description_english,
-            spanish_description: project.description_spanish,
-            id_category: project.id_category,
-            github: project.github,
-            link: project.link,
-            imageurl: url,
-            imagename: gcsFileName
-            },{where:{
-                id: id
-            }});
-
-        res.json("projects updated correctly");
-    }
-    catch(err){
-        return res.status(500).json({message: err.message });
+        
+        try {
+            await Projects.update({
+                english_name: project.name_english,
+                spanish_name: project.name_spanish,
+                english_description: project.description_english,
+                spanish_description: project.description_spanish,
+                id_category: project.id_category,
+                github: project.github,
+                link: project.link,
+                imageurl: url,
+                imagename: gcsFileName
+            }, {
+                where: { id: id }
+            });
+            res.json("projects updated correctly");
+        } catch(err) {
+            return res.status(500).json({message: err.message });
+        }
     }
 }
 
@@ -242,8 +268,8 @@ async function patchProjects (req, res){
 async function deleteProjects (req, res){
     const storageClient = new Storage({
         projectId: PROJECT_ID,
-        keyFilename: GOOGLEKEY,
-      });
+        credentials: GOOGLEKEY,
+    });
     const bucketname = 'portafolio12';
 
 
@@ -257,20 +283,19 @@ async function deleteProjects (req, res){
     console.log("id:", ids);
 
     try{
-        ids.forEach(element => {
-            Projects.destroy({ where: {id: element}});
-        });
+        for (const element of ids) {
+            await Projects.destroy({ where: {id: element}});
+        }
 
         const previousimagename = req.query.previousimagename;
         const previousimage = storageClient.bucket(bucketname).file(previousimagename);
         
-        previousimage.delete()
-            .then(() => {
-                console.log(`La imagen ${previousimagename} se ha eliminado correctamente.`);
-            })
-            .catch((err) => {
-                console.error(`Error al eliminar la imagen ${previousimagename}:`, err);
-            });
+        try {
+            await previousimage.delete();
+            console.log(`La imagen ${previousimagename} se ha eliminado correctamente.`);
+        } catch (err) {
+            console.error(`Error al eliminar la imagen ${previousimagename}:`, err);
+        }
 
         res.json("Projects succesfully deleted");
     }
